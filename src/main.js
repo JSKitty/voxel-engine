@@ -92,7 +92,7 @@ for (let y = 0; y < cellSize; ++y) {
     for (let z = 0; z < cellSize; ++z) {
         for (let x = 0; x < cellSize; ++x) {
             // Top-level blocks should be grass blocks!
-            addBlock(x, y, z, y === 7 ? blocks.grass : blocks.dirt);
+            addBlock(x, y, z, y === cellSize - 1 ? blocks.grass : blocks.dirt);
         }
     }
 }
@@ -102,8 +102,37 @@ const render = function () {
     runPressedButtons();
     requestAnimationFrame(render);
 
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(new THREE.Vector2(), camera);
+    const intersects = raycaster.intersectObjects(scene.children);
+    if (intersects[0]) {
+        cObjectInView.distance = intersects[0].distance;
+        cObjectInView.object = intersects[0].object;
+    } else {
+        cObjectInView.distance = 0;
+        cObjectInView.object = {};
+    }
+
     renderer.render(scene, camera);
 };
+
+// Keep track of player states
+const cObjectInView = {
+    distance: 0,
+    object: {}
+}
+
+function handleClick() {
+    if (cObjectInView.distance > 0 && cObjectInView.distance <= 2) {
+        // Nuke that block!
+        removeBlock(cObjectInView.object.position.x,
+                    cObjectInView.object.position.y,
+                    cObjectInView.object.position.z
+        );
+    }
+}
+
+document.body.addEventListener('click', () => handleClick());
 
 // Fire off the first renderer tick once ALL page elements are loaded
 window.onload = () => render();
