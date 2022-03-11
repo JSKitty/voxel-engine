@@ -52,9 +52,9 @@ const materials = {
 // Prepare our geometry and meshes
 const blockGeoGlobal = new THREE.BoxGeometry(1, 1, 1);
 const blocks = {
-    'grass': () => new THREE.Mesh(blockGeoGlobal, materials.grass),
-    'dirt': () => new THREE.Mesh(blockGeoGlobal, materials.dirt),
-    'stone': () => new THREE.Mesh(blockGeoGlobal, materials.stone),
+    'grass': () => new THREE.Mesh(blockGeoGlobal, materials.grass.map(a => a.clone())),
+    'dirt': () => new THREE.Mesh(blockGeoGlobal, materials.dirt.clone()),
+    'stone': () => new THREE.Mesh(blockGeoGlobal, materials.stone.clone()),
 }
 
 // A three-dimensional world grid
@@ -89,6 +89,16 @@ function editBlock(x, y, z, matType) {
     }
 }
 
+function setBlockColourIntensity(x, y, z, intensity) {
+    // Sanity: ensure this grid block exists
+    if (grid[x] && grid[x][y] && grid[x][y][z]) {
+        if (grid[x][y][z].material.length)
+            grid[x][y][z].material.forEach(a => a.color.setScalar(intensity));
+        else
+            grid[x][y][z].material.color.setScalar(intensity);
+    }
+}
+
 // Generate a simple 'cell' of 8x8x8 blocks
 const cellSize = 8;
 for (let y = 0; y < cellSize; ++y) {
@@ -109,9 +119,30 @@ const render = function () {
     raycaster.setFromCamera(new THREE.Vector2(), camera);
     const intersects = raycaster.intersectObjects(scene.children);
     if (intersects[0]) {
+        if (cObjectInView.distance) {
+            // Remove highlight from previous block
+            setBlockColourIntensity(cObjectInView.object.position.x,
+                                    cObjectInView.object.position.y,
+                                    cObjectInView.object.position.z,
+                                    1);
+         }
         cObjectInView.distance = intersects[0].distance;
         cObjectInView.object = intersects[0].object;
+        if (cObjectInView.distance > 0 && cObjectInView.distance <= 3) {
+        // Visually highlight this block
+        setBlockColourIntensity(cObjectInView.object.position.x,
+                                cObjectInView.object.position.y,
+                                cObjectInView.object.position.z,
+                                0.75);
+        }
     } else {
+        if (cObjectInView.distance) {
+            // Remove highlight from previous block
+            setBlockColourIntensity(cObjectInView.object.position.x,
+                                    cObjectInView.object.position.y,
+                                    cObjectInView.object.position.z,
+                                    1);
+         }
         cObjectInView.distance = 0;
         cObjectInView.object = {};
     }
