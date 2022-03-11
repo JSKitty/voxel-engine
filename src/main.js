@@ -126,7 +126,7 @@ const cObjectInView = {
 }
 
 function handleClick() {
-    if (cObjectInView.distance > 0 && cObjectInView.distance <= 2) {
+    if (cObjectInView.distance > 0 && cObjectInView.distance <= 3) {
         // Nuke that block!
         removeBlock(cObjectInView.object.position.x,
                     cObjectInView.object.position.y,
