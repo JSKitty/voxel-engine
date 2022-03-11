@@ -24,9 +24,10 @@ camera.lookAt(scene.position);
 // Prepare our textures
 const loader = new THREE.TextureLoader();
 const textures = {
-    'dirt': loader.load('src/textures/dirt.jpg'),
     'grassTop': loader.load('src/textures/grass-top.png'),
-    'grassSide': loader.load('src/textures/grass-side.jpg')
+    'grassSide': loader.load('src/textures/grass-side.jpg'),
+    'dirt': loader.load('src/textures/dirt.jpg'),
+    'stone': loader.load('src/textures/stone.jpg'),
 }
 // Apply filters, etc!
 Object.entries(textures).forEach(tex => {
@@ -36,7 +37,6 @@ Object.entries(textures).forEach(tex => {
 
 // Prepare our materials
 const materials = {
-    'dirt': new THREE.MeshStandardMaterial({ map: textures.dirt }),
     'grass': [ // Side
         new THREE.MeshStandardMaterial({ map: textures.grassSide }), // Side
         new THREE.MeshStandardMaterial({ map: textures.grassSide }), // Side
@@ -44,14 +44,17 @@ const materials = {
         new THREE.MeshStandardMaterial({ map: textures.dirt }),      // Bottom
         new THREE.MeshStandardMaterial({ map: textures.grassSide }), // Side
         new THREE.MeshStandardMaterial({ map: textures.grassSide })  // Side
-    ]
+    ],
+    'dirt': new THREE.MeshStandardMaterial({ map: textures.dirt }),
+    'stone': new THREE.MeshStandardMaterial({ map: textures.stone })
 }
 
 // Prepare our geometry and meshes
 const blockGeoGlobal = new THREE.BoxGeometry(1, 1, 1);
 const blocks = {
+    'grass': () => new THREE.Mesh(blockGeoGlobal, materials.grass),
     'dirt': () => new THREE.Mesh(blockGeoGlobal, materials.dirt),
-    'grass': () => new THREE.Mesh(blockGeoGlobal, materials.grass)
+    'stone': () => new THREE.Mesh(blockGeoGlobal, materials.stone),
 }
 
 // A three-dimensional world grid
@@ -92,7 +95,7 @@ for (let y = 0; y < cellSize; ++y) {
     for (let z = 0; z < cellSize; ++z) {
         for (let x = 0; x < cellSize; ++x) {
             // Top-level blocks should be grass blocks!
-            addBlock(x, y, z, y === cellSize - 1 ? blocks.grass : blocks.dirt);
+            addBlock(x, y, z, y === cellSize - 1 ? blocks.grass : y <= cellSize - 3 ? blocks.stone : blocks.dirt);
         }
     }
 }
