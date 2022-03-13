@@ -1,6 +1,6 @@
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(90, window.innerWidth/window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.1, 1000);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -141,12 +141,20 @@ for (let y = 0; y < cellSize; ++y) {
 
 // The renderer loop
 let fFirstRender = true;
+let nLastFrame = Date.now();
+const arrFPS = [];
 const render = function () {
     // For the first render, initalize some stuff
     if (fFirstRender) {
         fFirstRender = false;
         // Sit the player on-top of the cell
         camera.position.y = cellSize + nPlayerHeight;
+        // Setup the FPS counter
+        setInterval(() => 
+            domStats.innerHTML = Math.round(arrFPS.reduce((a, b) => a + b) / 30) + ' FPS' +
+                                 '<br>Draw Calls: ' + renderer.info.render.calls +
+                                 '<br>Triangles: ' + renderer.info.render.triangles
+        , 250);
     }
 
     // Execute any key presses. holds, etc.
@@ -158,8 +166,15 @@ const render = function () {
     // Check for + execute physical collisions
     checkPlayerPhysics();
 
-    // Render the scene and queue another frame!
+    // Render the scene
     renderer.render(scene, camera);
+    
+    // Calculate and display engine stats
+    arrFPS.unshift(Math.round(1000 / (Date.now() - nLastFrame)));
+    if (arrFPS.length > 30) arrFPS.pop();
+    nLastFrame = Date.now();
+
+    // Queue another frame!
     requestAnimationFrame(render);
 };
 

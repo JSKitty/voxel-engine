@@ -1,6 +1,18 @@
 body { margin: 0; }
 canvas { width: 100%; height: 100% }
 
+#stats {
+    cursor: none;
+    user-select: none;
+    color: #ffffff80;
+    position: fixed;
+    top: 1vh;
+    left: 1vw;
+    margin: 0;
+    font-size: small;
+    font-family: mono;
+}
+
 #crosshair {
     cursor: none;
     user-select: none;
