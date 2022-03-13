@@ -11,11 +11,15 @@ const controller = {
 const camDir = new THREE.Vector3();
 function camForwards() {
 	camera.getWorldDirection(camDir);
+    // Remove 'flying' capability from physical player
+    if (fUsePhysicalPlayer) camDir.y = 0;
 	camera.position.addScaledVector(camDir, 0.1);
 }
 
 function camBackwards() {
 	camera.getWorldDirection(camDir);
+    // Remove 'flying' capability from physical player
+    if (fUsePhysicalPlayer) camDir.y = 0;
 	camera.position.addScaledVector(camDir, -0.1);
 }
 

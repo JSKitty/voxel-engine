@@ -16,10 +16,8 @@ const light = new THREE.AmbientLight(0x404040); // soft white light
 scene.add(light);
 
 // Setup the camera
-camera.position.x = 10;
-camera.position.z = 15;
-camera.position.y = 10;
-camera.lookAt(scene.position);
+camera.position.x = 5;
+camera.position.z = 5;
 
 // Prepare our textures
 const loader = new THREE.TextureLoader();
@@ -111,43 +109,27 @@ for (let y = 0; y < cellSize; ++y) {
 }
 
 // The renderer loop
+let fFirstRender = true;
 const render = function () {
-    runPressedButtons();
-    requestAnimationFrame(render);
-
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(new THREE.Vector2(), camera);
-    const intersects = raycaster.intersectObjects(scene.children);
-    if (intersects[0]) {
-        if (cObjectInView.distance) {
-            // Remove highlight from previous block
-            setBlockColourIntensity(cObjectInView.object.position.x,
-                                    cObjectInView.object.position.y,
-                                    cObjectInView.object.position.z,
-                                    1);
-         }
-        cObjectInView.distance = intersects[0].distance;
-        cObjectInView.object = intersects[0].object;
-        if (cObjectInView.distance > 0 && cObjectInView.distance <= 3) {
-        // Visually highlight this block
-        setBlockColourIntensity(cObjectInView.object.position.x,
-                                cObjectInView.object.position.y,
-                                cObjectInView.object.position.z,
-                                0.75);
-        }
-    } else {
-        if (cObjectInView.distance) {
-            // Remove highlight from previous block
-            setBlockColourIntensity(cObjectInView.object.position.x,
-                                    cObjectInView.object.position.y,
-                                    cObjectInView.object.position.z,
-                                    1);
-         }
-        cObjectInView.distance = 0;
-        cObjectInView.object = {};
+    // For the first render, initalize some stuff
+    if (fFirstRender) {
+        fFirstRender = false;
+        // Sit the player on-top of the cell
+        camera.position.y = cellSize + nPlayerHeight;
     }
 
+    // Execute any key presses. holds, etc.
+    runPressedButtons();
+
+    // Check for any objects in view, highlighting and selecting in-advance, if possible.
+    checkObjectsInView();
+
+    // Check for + execute physical collisions
+    checkPlayerPhysics();
+
+    // Render the scene and queue another frame!
     renderer.render(scene, camera);
+    requestAnimationFrame(render);
 };
 
 // Keep track of player states
