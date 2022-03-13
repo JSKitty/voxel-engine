@@ -22,6 +22,8 @@ camera.position.z = 5;
 // Prepare our textures
 const loader = new THREE.TextureLoader();
 const textures = {
+    'oakSide': loader.load('src/textures/oak-bark.jpg'),
+    'oakMiddle': loader.load('src/textures/oak-inner.jpg'),
     'grassTop': loader.load('src/textures/grass-top.png'),
     'grassSide': loader.load('src/textures/grass-side.jpg'),
     'dirt': loader.load('src/textures/dirt.jpg'),
@@ -35,6 +37,14 @@ Object.entries(textures).forEach(tex => {
 
 // Prepare our materials
 const materials = {
+    'oak': [ // Side
+        new THREE.MeshStandardMaterial({ map: textures.oakSide }),   // Side
+        new THREE.MeshStandardMaterial({ map: textures.oakSide }),   // Side
+        new THREE.MeshStandardMaterial({ map: textures.oakMiddle }), // Top
+        new THREE.MeshStandardMaterial({ map: textures.oakMiddle }), // Bottom
+        new THREE.MeshStandardMaterial({ map: textures.oakSide }),   // Side
+        new THREE.MeshStandardMaterial({ map: textures.oakSide })    // Side
+    ],
     'grass': [ // Side
         new THREE.MeshStandardMaterial({ map: textures.grassSide }), // Side
         new THREE.MeshStandardMaterial({ map: textures.grassSide }), // Side
@@ -50,6 +60,7 @@ const materials = {
 // Prepare our geometry and meshes
 const blockGeoGlobal = new THREE.BoxGeometry(1, 1, 1);
 const blocks = {
+    'oak': () => new THREE.Mesh(blockGeoGlobal, materials.oak),
     'grass': () => new THREE.Mesh(blockGeoGlobal, materials.grass),
     'dirt': () => new THREE.Mesh(blockGeoGlobal, materials.dirt),
     'stone': () => new THREE.Mesh(blockGeoGlobal, materials.stone),
@@ -68,6 +79,7 @@ function addBlock(x, y, z, blockType) {
     mesh.position.set(x, y, z);
     // Spawn into the scene!
     scene.add(mesh);
+    return mesh;
 }
 
 function removeBlock(x, y, z) {
@@ -149,6 +161,8 @@ const render = function () {
         fFirstRender = false;
         // Sit the player on-top of the cell
         camera.position.y = cellSize + nPlayerHeight;
+        // Spawn one *really* long tree
+        for (let i = 0; i < 100; ++i) addTree(3, cellSize + i, 3);
         // Setup the FPS counter
         setInterval(() => 
             domStats.innerHTML = Math.round(arrFPS.reduce((a, b) => a + b) / 30) + ' FPS' +
