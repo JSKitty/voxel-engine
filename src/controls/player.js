@@ -12,6 +12,9 @@ let nFallSpeed = 0.075;
 let fUsePhysicalPlayer = true;
 
 function checkObjectsInView() {
+    // Prevent accidently hitting things when locking the cursor
+    if (controls.isLocked === false) return;
+    // Raycast from the camera face
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(new THREE.Vector2(), camera);
     const intersects = raycaster.intersectObjects(scene.children);

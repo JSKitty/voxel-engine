@@ -24,6 +24,7 @@ const loader = new THREE.TextureLoader();
 const textures = {
     'oakSide': loader.load('src/textures/oak-bark.jpg'),
     'oakMiddle': loader.load('src/textures/oak-inner.jpg'),
+    'leaves': loader.load('src/textures/leaves.png'),
     'grassTop': loader.load('src/textures/grass-top.png'),
     'grassSide': loader.load('src/textures/grass-side.jpg'),
     'dirt': loader.load('src/textures/dirt.jpg'),
@@ -45,6 +46,7 @@ const materials = {
         new THREE.MeshStandardMaterial({ map: textures.oakSide }),   // Side
         new THREE.MeshStandardMaterial({ map: textures.oakSide })    // Side
     ],
+    'leaves': new THREE.MeshStandardMaterial({ map: textures.leaves }),
     'grass': [ // Side
         new THREE.MeshStandardMaterial({ map: textures.grassSide }), // Side
         new THREE.MeshStandardMaterial({ map: textures.grassSide }), // Side
@@ -57,10 +59,15 @@ const materials = {
     'stone': new THREE.MeshStandardMaterial({ map: textures.stone })
 }
 
+// Set properties for 'unique' blocks, like transparent leaves, glass, etc
+materials.leaves.transparent = true;
+materials.leaves.alphaTest = 1;
+
 // Prepare our geometry and meshes
 const blockGeoGlobal = new THREE.BoxGeometry(1, 1, 1);
 const blocks = {
     'oak': () => new THREE.Mesh(blockGeoGlobal, materials.oak),
+    'leaves': () => new THREE.Mesh(blockGeoGlobal, materials.leaves),
     'grass': () => new THREE.Mesh(blockGeoGlobal, materials.grass),
     'dirt': () => new THREE.Mesh(blockGeoGlobal, materials.dirt),
     'stone': () => new THREE.Mesh(blockGeoGlobal, materials.stone),
@@ -70,9 +77,10 @@ const blocks = {
 const grid = [[[]]];
 
 function addBlock(x, y, z, blockType) {
-    // Sanity: ensure this grid path exists
+    // Sanity: ensure this grid path exists and is not already assigned
     if (!grid[x]) grid[x] = [];
     if (!grid[x][y]) grid[x][y] = [];
+    if (grid[x][y][z]) return null;
     // Create a new block instance and assign it
     const mesh = blockType();
     grid[x][y][z] = mesh;
@@ -161,8 +169,8 @@ const render = function () {
         fFirstRender = false;
         // Sit the player on-top of the cell
         camera.position.y = cellSize + nPlayerHeight;
-        // Spawn one *really* long tree
-        for (let i = 0; i < 100; ++i) addTree(3, cellSize + i, 3);
+        // Spawn a tree randomly on the X-axis!
+        addTree(Math.round(cellSize / 4 + (Math.random() * (cellSize / 2))), cellSize, 2);
         // Setup the FPS counter
         setInterval(() => 
             domStats.innerHTML = Math.round(arrFPS.reduce((a, b) => a + b) / 30) + ' FPS' +
@@ -208,7 +216,10 @@ function handleClick() {
     }
 }
 
-document.body.addEventListener('click', () => handleClick());
+document.body.addEventListener('click', () => {
+    handleClick();
+    controls.lock();
+});
 
 // Fire off the first renderer tick once ALL page elements are loaded
 window.onload = () => render();

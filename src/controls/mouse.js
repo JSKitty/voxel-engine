@@ -91,5 +91,4 @@ class PointerLockControls extends THREE.EventDispatcher {
 
 // Setup mouse input
 controls = new PointerLockControls(camera, document.body);
-document.body.addEventListener('click', () => controls.lock());
 scene.add(controls.getObject());
