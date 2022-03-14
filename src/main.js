@@ -19,6 +19,10 @@ scene.add(light);
 camera.position.x = 5;
 camera.position.z = 5;
 
+// Setup some basic world constants
+const cellHeight = 3;
+const cellWidth = 18;
+
 // The renderer loop
 let fFirstRender = true;
 let nLastFrame = Date.now();
@@ -28,19 +32,20 @@ const render = function () {
     if (fFirstRender) {
         fFirstRender = false;
         // Generate a simple 'cell' of 8x8x8 blocks
-        const cellSize = 8;
-        for (let y = 0; y < cellSize; ++y) {
-            for (let z = 0; z < cellSize; ++z) {
-                for (let x = 0; x < cellSize; ++x) {
+        for (let y = 0; y < cellHeight; ++y) {
+            for (let z = 0; z < cellWidth; ++z) {
+                for (let x = 0; x < cellWidth; ++x) {
                     // Top-level blocks should be grass blocks!
-                    addBlock(x, y, z, y === cellSize - 1 ? blocks.grass : y <= cellSize - 3 ? blocks.stone : blocks.dirt);
+                    addBlock(x, y, z, y === cellHeight - 1 ? blocks.grass : y <= cellHeight - 3 ? blocks.stone : blocks.dirt);
                 }
             }
         }
         // Sit the player on-top of the cell
-        camera.position.y = cellSize + nPlayerHeight;
-        // Spawn a tree randomly on the X-axis!
-        addTree(Math.round(cellSize / 4 + (Math.random() * (cellSize / 2))), cellSize, 2);
+        camera.position.y = cellHeight + nPlayerHeight;
+        // Spawn a forest!
+        const nTrees = Math.random() * 15;
+        for (let i = 0; i<nTrees; i++)
+            addTree(Math.round(Math.random() * cellWidth), cellHeight, Math.round(Math.random() * cellWidth));
         // Setup the FPS counter
         setInterval(() => 
             domStats.innerHTML = Math.round(arrFPS.reduce((a, b) => a + b) / 30) + ' FPS' +
