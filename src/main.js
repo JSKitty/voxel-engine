@@ -47,11 +47,13 @@ const render = function () {
         for (let i = 0; i<nTrees; i++)
             addTree(Math.round(Math.random() * cellWidth), cellHeight, Math.round(Math.random() * cellWidth));
         // Setup the FPS counter
-        setInterval(() => 
+        setInterval(() =>
             domStats.innerHTML = Math.round(arrFPS.reduce((a, b) => a + b) / 30) + ' FPS' +
                                  '<br>Draw Calls: ' + renderer.info.render.calls +
                                  '<br>Triangles: ' + renderer.info.render.triangles
         , 250);
+        // Lastly, perform an initially-expensive optimization run by hiding meshes that have no visible faces.
+        checkWorldVisibility();
     }
 
     // Execute any key presses. holds, etc.

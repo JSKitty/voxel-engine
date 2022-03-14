@@ -81,6 +81,8 @@ function removeBlock(x, y, z) {
             grid[x][y][z].material.dispose();
         // Remove from memory and free up it's coordinate
         grid[x][y][z] = undefined;
+        // If there's any hidden neighbours, render them!
+        checkBlockNeighbourVisibility(x, y, z);
     }
 }
 
@@ -92,6 +94,32 @@ function editBlock(x, y, z, matType) {
         else
             grid[x][y][z].material = matType.clone();
     }
+}
+
+function isBlockHere(x, y, z) {
+    if (grid[x] && grid[x][y] && grid[x][y][z]) return true;
+    else false;
+}
+
+function checkBlockVisibility(x, y, z) {
+    // Sanity: ensure this grid block exists
+    if (grid[x] && grid[x][y] && grid[x][y][z]) {
+        grid[x][y][z].visible = !isBlockHere(x - 1, y, z) ||
+                                !isBlockHere(x + 1, y, z) ||
+                                !isBlockHere(x, y - 1, z) ||
+                                !isBlockHere(x, y + 1, z) ||
+                                !isBlockHere(x, y, z - 1) ||
+                                !isBlockHere(x, y, z + 1);
+    }
+}
+
+function checkBlockNeighbourVisibility(x, y, z) {
+    checkBlockVisibility(x - 1, y, z);
+    checkBlockVisibility(x + 1, y, z);
+    checkBlockVisibility(x, y - 1, z);
+    checkBlockVisibility(x, y + 1, z);
+    checkBlockVisibility(x, y, z - 1);
+    checkBlockVisibility(x, y, z + 1);
 }
 
 function setBlockColourIntensity(x, y, z, intensity) {
@@ -123,6 +151,18 @@ function setBlockColourIntensity(x, y, z, intensity) {
             }
             // Apply internsity scalar to cloned material
             cBlk.material.color.setScalar(intensity);
+        }
+    }
+}
+
+function checkWorldVisibility() {
+    let x = 0, y = 0, z = 0;
+    for (x=0; x<grid.length; x++){
+        for (y=0; y<grid[x].length; y++){
+            if (!grid[x][y]) continue;
+            for (z=0; z<grid[x][y].length; z++){
+                checkBlockVisibility(x, y, z);
+            }
         }
     }
 }
