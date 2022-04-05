@@ -4,6 +4,7 @@ const textures = {
     'oakSide': loader.load('src/textures/oak-bark.jpg'),
     'oakMiddle': loader.load('src/textures/oak-inner.jpg'),
     'leaves': loader.load('src/textures/leaves.png'),
+    'water': loader.load('src/textures/water.jpg'),
     'grassTop': loader.load('src/textures/grass-top.png'),
     'grassSide': loader.load('src/textures/grass-side.jpg'),
     'dirt': loader.load('src/textures/dirt.jpg'),
@@ -26,6 +27,7 @@ const materials = {
         new THREE.MeshStandardMaterial({ map: textures.oakSide })    // Side
     ],
     'leaves': new THREE.MeshStandardMaterial({ map: textures.leaves }),
+    'water': new THREE.MeshStandardMaterial({ map: textures.water }),
     'grass': [ // Side
         new THREE.MeshStandardMaterial({ map: textures.grassSide }), // Side
         new THREE.MeshStandardMaterial({ map: textures.grassSide }), // Side
@@ -41,6 +43,8 @@ const materials = {
 // Set properties for 'unique' blocks, like transparent leaves, glass, etc
 materials.leaves.transparent = true;
 materials.leaves.alphaTest = 1;
+materials.water.transparent = true;
+materials.water.opacity = 0.5;
 
 // Prepare our geometry and meshes
 const blockGeoGlobal = new THREE.BoxGeometry(1, 1, 1);
@@ -48,6 +52,7 @@ const blocks = {
     'oak': () => new THREE.Mesh(blockGeoGlobal, materials.oak),
     'leaves': () => new THREE.Mesh(blockGeoGlobal, materials.leaves),
     'grass': () => new THREE.Mesh(blockGeoGlobal, materials.grass),
+    'water': () => new THREE.Mesh(blockGeoGlobal, materials.water),
     'dirt': () => new THREE.Mesh(blockGeoGlobal, materials.dirt),
     'stone': () => new THREE.Mesh(blockGeoGlobal, materials.stone),
 }
@@ -64,6 +69,13 @@ function addBlock(x, y, z, blockType) {
     const mesh = blockType();
     grid[x][y][z] = mesh;
     mesh.position.set(x, y, z);
+    mesh.userData.type = blockType;
+    // Assign special values for special block types
+    if (blockType === blocks.water) {
+        mesh.userData.fWater = true;
+        mesh.userData.nVolume = 0;
+        arrWaterVoxels.push(mesh);
+    }
     // Spawn into the scene!
     scene.add(mesh);
     return mesh;
@@ -101,6 +113,16 @@ function isBlockHere(x, y, z) {
     else false;
 }
 
+function isSolidBlockHere(x, y, z) {
+    if (grid[x] && grid[x][y] && grid[x][y][z] && grid[x][y][z].userData.type !== blocks.water) return true;
+    else false;
+}
+
+function getBlock(x, y, z, type) {
+    if (grid[x] && grid[x][y] && grid[x][y][z] && (!type || type && type === grid[x][y][z].userData.type)) return grid[x][y][z];
+    else null;
+}
+
 function checkBlockVisibility(x, y, z) {
     // Sanity: ensure this grid block exists
     if (grid[x] && grid[x][y] && grid[x][y][z]) {
@@ -117,7 +139,7 @@ function checkBlockNeighbourVisibility(x, y, z) {
     checkBlockVisibility(x - 1, y, z);
     checkBlockVisibility(x + 1, y, z);
     checkBlockVisibility(x, y - 1, z);
-    checkBlockVisibility(x, y + 1, z);
+    checkBlockVisibility(x, y + 1, z); 
     checkBlockVisibility(x, y, z - 1);
     checkBlockVisibility(x, y, z + 1);
 }

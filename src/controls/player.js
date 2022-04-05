@@ -25,7 +25,10 @@ function checkObjectsInView() {
                                     cObjectInView.object.position.y,
                                     cObjectInView.object.position.z,
                                     1);
-         }
+        }
+        // Cannot interact with water
+        if (intersects[0].object.userData.fWater) return;
+        // Update view data
         cObjectInView.distance = intersects[0].distance;
         cObjectInView.object = intersects[0].object;
         if (cObjectInView.distance > 0 && cObjectInView.distance <= 3) {

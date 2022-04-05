@@ -54,6 +54,8 @@ const render = function () {
         , 250);
         // Lastly, perform an initially-expensive optimization run by hiding meshes that have no visible faces.
         checkWorldVisibility();
+
+        simulateWaterTick();
     }
 
     // Execute any key presses. holds, etc.
@@ -90,6 +92,19 @@ function handleClick() {
                     cObjectInView.object.position.y,
                     cObjectInView.object.position.z
         );
+    }
+}
+
+function placeBlock() {
+    if (cObjectInView.distance > 0 && cObjectInView.distance <= 3) {
+        // Add a block on top!
+        const cBlock = addBlock(cObjectInView.object.position.x,
+                    cObjectInView.object.position.y + 1,
+                    cObjectInView.object.position.z,
+                    blocks.water
+        );
+        if (!cBlock) return; 
+        cBlock.userData.nVolume = 1;
     }
 }
 

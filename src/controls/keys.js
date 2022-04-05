@@ -1,6 +1,7 @@
 
 /* Bindings */
 const controller = {
+    '1': {pressed: false, func: placeBlock},
     'w': {pressed: false, func: camForwards},
     'a': {pressed: false, func: camLeft},
     's': {pressed: false, func: camBackwards},
