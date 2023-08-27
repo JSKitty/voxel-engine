@@ -32,7 +32,7 @@ const render = function () {
     if (fFirstRender) {
         fFirstRender = false;
         // Generate a simple 'cell' of 8x8x8 blocks
-        for (let y = 0; y < cellHeight; ++y) {
+        /*for (let y = 0; y < cellHeight; ++y) {
             for (let z = 0; z < cellWidth; ++z) {
                 for (let x = 0; x < cellWidth; ++x) {
                     // Top-level blocks should be grass blocks!
@@ -40,12 +40,15 @@ const render = function () {
                 }
             }
         }
-        // Sit the player on-top of the cell
-        camera.position.y = cellHeight + nPlayerHeight;
         // Spawn a forest!
         const nTrees = Math.random() * 15;
         for (let i = 0; i<nTrees; i++)
-            addTree(Math.round(Math.random() * cellWidth), cellHeight, Math.round(Math.random() * cellWidth));
+            addTree(Math.round(Math.random() * cellWidth), cellHeight, Math.round(Math.random() * cellWidth));*/
+        
+        // Generate a terrain
+        generateTerrain();
+        // Sit the player on-top of the cell
+        camera.position.y = cellHeight + nPlayerHeight;
         // Setup the FPS counter
         setInterval(() =>
             domStats.innerHTML = Math.round(arrFPS.reduce((a, b) => a + b) / 30) + ' FPS' +
