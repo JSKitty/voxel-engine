@@ -238,12 +238,15 @@ function generateTerrain() {
         if(Math.random() > 0.98) addTree(x, currentTopY, z); // Plant a random tree
       }
     }
-  
-    // Craft a winding little river.
+
     let currentRiverY = Math.floor(cellHeight + Math.random() * 2);
     for(let z = 0; z < cellWidth; z++) {
-      for(let x = currentRiverY-1; x <= currentRiverY+1; x++) addBlock(x, cellHeight, z, blocks.water); // Water block for river
-      if(Math.random() > 0.6) currentRiverY += Math.random() > 0.5 ? 1 : -1; // Meandering path
+      for(let x = currentRiverY-1; x <= currentRiverY+1; x++) {
+        if(addBlock(x, cellHeight+1, z, blocks.water) !== null) { // Check if we're not in the air
+          addBlock(x, cellHeight, z, blocks.grass); // Make sure we're not flooding grass out here
+        }
+      }
+      if(Math.random() > 0.6) currentRiverY += Math.random() > 0.5 ? 1 : -1;
       if(currentRiverY < 3) currentRiverY = 3;
       if(currentRiverY > cellWidth-4) currentRiverY = cellWidth-4;
     }
