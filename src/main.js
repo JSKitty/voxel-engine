@@ -20,7 +20,7 @@ camera.position.x = 5;
 camera.position.z = 5;
 
 // Setup some basic world constants
-const cellHeight = 3;
+const cellHeight = 5;
 const cellWidth = 18;
 
 // The renderer loop
