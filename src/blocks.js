@@ -177,6 +177,39 @@ function setBlockColourIntensity(x, y, z, intensity) {
     }
 }
 
+function setBlockOpacity(x, y, z, opacity) {
+    // Sanity: ensure this grid block exists
+    if (grid[x] && grid[x][y] && grid[x][y][z]) {
+        const cBlk = grid[x][y][z];
+        // Optimization Note:
+        // To save A LOT of memory: we'll only deep-clone materials on-demand,
+        // we also add a `.isCloned` flag to prevent double-clones in the future!
+        // Con: A slight 'hitch' in CPU during re-render of the new materials
+        if (cBlk.material.length) {
+            // Deep-Clone and reassign materials
+            if (!cBlk.material[0].isCloned) {
+                cBlk.material = cBlk.material.map(a => a.clone());
+                cBlk.material.forEach(a => {
+                    a.isCloned = true;
+                    // Apply opacity to cloned materials
+                    a.opacity = opacity;
+                })
+            } else {
+                // Apply opacity to cloned materials
+                cBlk.material.forEach(a => a.opacity = opacity);
+            }
+        } else {
+            // Deep-Clone and reassign material
+            if (!cBlk.material.isCloned) {
+                cBlk.material = cBlk.material.clone();
+                cBlk.material.isCloned = true;
+            }
+            // Apply opacity to cloned material
+            cBlk.material.opacity = opacity;
+        }
+    }
+}
+
 function checkWorldVisibility() {
     let x = 0, y = 0, z = 0;
     for (x=0; x<grid.length; x++){
