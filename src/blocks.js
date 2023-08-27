@@ -223,24 +223,27 @@ function checkWorldVisibility() {
 }
 
 function generateTerrain() {
-    // Generate some grassy top layer with a bit of variation.
+    // Mostly flat grass with occasional slight elevation.
+    let currentTopY = cellHeight;
     for(let x = 0; x < cellWidth; x++) {
       for(let z = 0; z < cellWidth; z++) {
-        let height_variation = Math.ceil(Math.random() * 3);
-        for(let y = 0; y < cellHeight + height_variation; y++) {
-          if(y == cellHeight + height_variation - 1) addBlock(x, y, z, blocks.grass);
+        if(Math.random() > 0.95) currentTopY += Math.random() > 0.5 ? 1 : -1; // Small elevation changes
+        if(currentTopY < 2) currentTopY = 2;
+        if(currentTopY > cellHeight+1) currentTopY = cellHeight+1;
+        for(let y = 0; y < currentTopY; y++) {
+          if(y == currentTopY - 1) addBlock(x, y, z, blocks.grass);
           else addBlock(x, y, z, blocks.dirt);
         }
-        if(Math.random() > 0.95) addTree(x, cellHeight + height_variation, z); // Some trees here and there
+        if(Math.random() > 0.98) addTree(x, currentTopY, z); // Random trees
       }
     }
-
-    // Create a river
+  
+    // Create a river:
     let currentRiverY = Math.floor(cellHeight + Math.random() * 3);
     for(let z = 0; z < cellWidth; z++) {
-      for(let x = currentRiverY-1; x <= currentRiverY+1; x++) addBlock(x, currentRiverY, z, blocks.water);
-      if(Math.random() > 0.5) currentRiverY += Math.random() > 0.5 ? 1 : -1; // Meandering river
-      if(currentRiverY < 2) currentRiverY = 2;
-      if(currentRiverY > cellWidth-3) currentRiverY = cellWidth-3;
+      for(let x = currentRiverY-1; x <= currentRiverY+1; x++) addBlock(x, cellHeight, z, blocks.water);
+      if(Math.random() > 0.6) currentRiverY += Math.random() > 0.5 ? 1 : -1; // Meandering river
+      if(currentRiverY < 3) currentRiverY = 3;
+      if(currentRiverY > cellWidth-4) currentRiverY = cellWidth-4;
     }
 }
