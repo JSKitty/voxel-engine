@@ -97,8 +97,9 @@ function handleClick() {
 
 function placeBlock() {
     if (cObjectInView.distance > 0 && cObjectInView.distance <= 3) {
-        // Add a block on top!
-        const cBlock = addBlock(cObjectInView.object.position.x,
+        const isWater = cObjectInView.object.userData.type === blocks.water;
+        // Add a block (or modify the existing Water block)
+        const cBlock = isWater ? cObjectInView.object : addBlock(cObjectInView.object.position.x,
                     cObjectInView.object.position.y + 1,
                     cObjectInView.object.position.z,
                     blocks.water

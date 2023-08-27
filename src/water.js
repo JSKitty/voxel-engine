@@ -70,8 +70,8 @@ function simulateWaterTick() {
         // The Y-position of the water is equal to the remainder of it's block-height-ratio, divided by two.
         // ... rounding is used as a cheap way to keep blocks from 'sinking' over loops. TODO: Improve this!
         cWater.position.y = nY - ((1 - cWater.userData.nVolume) / 2);
-        // Now we adjust opacity to meet it, since super shallow water should be less visible
-        setBlockOpacity(cWater.position.x, nY, cWater.position.z, Math.min(cWater.userData.nVolume, 1));
+        // Now we adjust opacity to meet it (Opacity ranges between 0.2-1.0)
+        setBlockOpacity(cWater.position.x, nY, cWater.position.z, Math.max(Math.min(cWater.userData.nVolume, 1), 0.2));
     }
     // Water ticks are processed at a maximum of every 50ms (after processing times)
     setTimeout(simulateWaterTick, 50);
