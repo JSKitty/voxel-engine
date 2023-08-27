@@ -228,8 +228,8 @@ function generateTerrain() {
       for(let z = 0; z < cellWidth; z++) {
         let height_variation = Math.ceil(Math.random() * 3);
         for(let y = 0; y < cellHeight + height_variation; y++) {
-          if(y == cellHeight + height_variation - 1) addBlock(x, y, z, 'grass');
-          else addBlock(x, y, z, 'dirt');
+          if(y == cellHeight + height_variation - 1) addBlock(x, y, z, blocks.grass);
+          else addBlock(x, y, z, blocks.dirt);
         }
         if(Math.random() > 0.95) addTree(x, cellHeight + height_variation, z); // Some trees here and there
       }
@@ -238,7 +238,7 @@ function generateTerrain() {
     // Create a river
     let currentRiverY = Math.floor(cellHeight + Math.random() * 3);
     for(let z = 0; z < cellWidth; z++) {
-      for(let x = currentRiverY-1; x <= currentRiverY+1; x++) addBlock(x, currentRiverY, z, 'water');
+      for(let x = currentRiverY-1; x <= currentRiverY+1; x++) addBlock(x, currentRiverY, z, blocks.water);
       if(Math.random() > 0.5) currentRiverY += Math.random() > 0.5 ? 1 : -1; // Meandering river
       if(currentRiverY < 2) currentRiverY = 2;
       if(currentRiverY > cellWidth-3) currentRiverY = cellWidth-3;
